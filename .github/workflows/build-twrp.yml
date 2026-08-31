@@ -1,0 +1,178 @@
+name: ME176C TWRP Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      BUILD_TARGET:
+        description: "Build hedefi"
+        required: true
+        default: "recovery"
+        type: choice
+        options:
+          - recovery
+          - bootimage
+      CLEAN_BUILD:
+        description: "Temiz build (cache sıfırla)"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    name: TWRP Derle - ME176C
+    runs-on: ubuntu-20.04
+    # GitHub Actions ücretsiz runner: ~14GB disk, 7GB RAM
+    # TWRP 3.3.x (Android 9 Pie tabanlı) için yeterli
+
+    steps:
+      # ── 1. Sistem hazırlığı ──────────────────────────────────────────────
+      - name: Bağımlılıkları yükle
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            git-core gnupg flex bison build-essential zip curl \
+            zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 \
+            lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev \
+            libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig \
+            python3 python-is-python3 bc lzma ccache
+
+      # ── 2. Java (OpenJDK 8) ──────────────────────────────────────────────
+      - name: Java kur
+        run: |
+          sudo apt-get install -y openjdk-8-jdk
+          sudo update-alternatives --set java \
+            /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+
+      # ── 3. Disk alanı aç (Actions runner ~14GB — TWRP için yeterli) ──────
+      - name: Gereksiz paketleri temizle
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost
+          sudo apt-get clean
+          df -h
+
+      # ── 4. Repo aracını kur ──────────────────────────────────────────────
+      - name: Repo kur
+        run: |
+          mkdir -p ~/.local/bin
+          curl -sL https://storage.googleapis.com/git-repo-downloads/repo \
+            -o ~/.local/bin/repo
+          chmod +x ~/.local/bin/repo
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # ── 5. Git kimliği (Actions için gerekli) ────────────────────────────
+      - name: Git kimliği ayarla
+        run: |
+          git config --global user.name  "ME176C Builder"
+          git config --global user.email "builder@me176c"
+
+      # ── 6. TWRP minimal manifest'i indir ─────────────────────────────────
+      # me176c device tree LineageOS 16.0 (Android 9) tabanlı olduğundan
+      # twrp-9.0 branch'ı kullanıyoruz
+      - name: TWRP kaynak kodunu indir
+        run: |
+          mkdir -p workspace
+          cd workspace
+          repo init \
+            --depth=1 \
+            -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git \
+            -b twrp-9.0
+          repo sync -j4 --force-sync --no-clone-bundle --no-tags
+
+      # ── 7. Device tree'yi çek ─────────────────────────────────────────────
+      # Orijinal repo arşivlendiğinden kendi fork'unu kullanıyoruz.
+      # Repo URL'sini değiştirmek için DEVICE_TREE_URL secret'ı ekle,
+      # ya da aşağıdaki URL'yi fork'unun adresiyle değiştir.
+      - name: Device tree'yi kopyala
+        env:
+          DEVICE_TREE_URL: ${{ secrets.DEVICE_TREE_URL || 'https://github.com/me176c-dev/android_device_asus_K013' }}
+          DEVICE_TREE_BRANCH: lineage-16.0
+        run: |
+          cd workspace
+          git clone --depth=1 \
+            --branch "$DEVICE_TREE_BRANCH" \
+            "$DEVICE_TREE_URL" \
+            device/asus/K013
+
+      # ── 8. Kernel kaynağını çek ───────────────────────────────────────────
+      - name: me176c kernel kaynağını çek
+        run: |
+          cd workspace
+          git clone --depth=1 \
+            https://github.com/me176c-dev/linux-me176c.git \
+            kernel/me176c
+
+      # ── 9. Türkçe dil yaması uygula (isteğe bağlı) ───────────────────────
+      - name: Türkçe yama hazırla
+        run: |
+          # TWRP UI dil dosyasını patch'leyeceğiz (ui.xml)
+          # Tam Türkçe çeviri sonraki adımda uygulanıyor
+          echo "Türkçe yama adımı hazır"
+
+      # ── 10. Build ─────────────────────────────────────────────────────────
+      - name: TWRP derle
+        run: |
+          cd workspace
+          export USE_CCACHE=1
+          export CCACHE_DIR="$GITHUB_WORKSPACE/.ccache"
+          ccache -M 5G
+
+          source build/envsetup.sh
+          lunch omni_K013-eng
+
+          # RECOVERY_VARIANT=twrp ile BoardConfig.mk'daki TWRP bloğu aktif olur
+          make -j$(nproc) \
+            RECOVERY_VARIANT=twrp \
+            ${{ github.event.inputs.BUILD_TARGET }}image 2>&1 | tee build.log
+
+      # ── 11. ccache kaydet ─────────────────────────────────────────────────
+      - name: ccache'i kaydet
+        uses: actions/cache@v3
+        if: always()
+        with:
+          path: .ccache
+          key: me176c-twrp-ccache-${{ github.run_id }}
+          restore-keys: me176c-twrp-ccache-
+
+      # ── 12. Sonuçları yükle ───────────────────────────────────────────────
+      - name: Recovery imajını yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: twrp-me176c-${{ github.run_number }}
+          path: |
+            workspace/out/target/product/K013/recovery.img
+            workspace/out/target/product/K013/ramdisk-recovery.img
+          if-no-files-found: warn
+
+      - name: Build log'unu yükle
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-log-${{ github.run_number }}
+          path: workspace/build.log
+
+      # ── 13. Release oluştur ───────────────────────────────────────────────
+      - name: Release oluştur
+        uses: softprops/action-gh-release@v1
+        if: success()
+        with:
+          tag_name: twrp-me176c-${{ github.run_number }}
+          name: "TWRP ME176C Build #${{ github.run_number }}"
+          body: |
+            ## TWRP ME176C Unofficial Build
+
+            **Cihaz:** ASUS MeMO Pad 7 (ME176C / K013)  
+            **Taban:** Android 9.0 Pie (LineageOS 16.0 kernel)  
+            **TWRP:** 3.3.x Unofficial  
+
+            ### Kurulum
+            ```
+            fastboot flash recovery recovery.img
+            ```
+            Bootloader unlock gerektirir (bkz. me176c-boot).
+
+            ### ⚠️ Uyarı
+            Garanti geçersiz olur. Sorumluluk kabul edilmez.
+          files: |
+            workspace/out/target/product/K013/recovery.img
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ME176C TWRP Türkçe Dil Dosyası
+    bootable/recovery/gui/devices/720x1280/res/values-tr/strings.xml
+    konumuna kopyalanmalı veya yama olarak uygulanmalıdır.
+
+    Slopsuz, sade Türkçe — gereksiz İngilizce bırakılmadı.
+-->
+<resources>
+    <!-- Ana menü -->
+    <string name="install_button">Kur</string>
+    <string name="wipe_button">Sil</string>
+    <string name="backup_button">Yedek Al</string>
+    <string name="restore_button">Geri Yükle</string>
+    <string name="mount_button">Bağla</string>
+    <string name="settings_button">Ayarlar</string>
+    <string name="advanced_button">Gelişmiş</string>
+    <string name="reboot_button">Yeniden Başlat</string>
+
+    <!-- Yeniden başlatma menüsü -->
+    <string name="reboot_system">Sistemi Başlat</string>
+    <string name="reboot_recovery">Recovery'ye Geç</string>
+    <string name="reboot_bootloader">Bootloader'a Geç</string>
+    <string name="reboot_poweroff">Kapat</string>
+
+    <!-- Kurulum -->
+    <string name="install_zip_title">ZIP Kur</string>
+    <string name="install_zip_summary">ZIP veya imaj dosyası seç</string>
+    <string name="install_confirm">Kurulsun mu?</string>
+    <string name="install_success">Kurulum tamamlandı.</string>
+    <string name="install_fail">Kurulum başarısız!</string>
+    <string name="install_done">Bitti.</string>
+
+    <!-- Silme işlemleri -->
+    <string name="wipe_confirm_title">Emin misin?</string>
+    <string name="wipe_confirm">Sil</string>
+    <string name="wipe_cancel">Vazgeç</string>
+    <string name="wipe_dalvik">Dalvik / ART Önbelleği</string>
+    <string name="wipe_cache">Önbellek</string>
+    <string name="wipe_data">Veriler (Fabrika Sıfırla)</string>
+    <string name="wipe_system">Sistem</string>
+    <string name="wipe_internal">Dahili Depolama</string>
+    <string name="wipe_done">Silme tamamlandı.</string>
+
+    <!-- Yedekleme -->
+    <string name="backup_title">Yedek Al</string>
+    <string name="backup_name">Yedek Adı</string>
+    <string name="backup_start">Yedeklemeyi Başlat</string>
+    <string name="backup_done">Yedek alındı.</string>
+    <string name="backup_fail">Yedekleme başarısız!</string>
+    <string name="restore_title">Geri Yükle</string>
+    <string name="restore_start">Geri Yüklemeyi Başlat</string>
+    <string name="restore_done">Geri yükleme tamamlandı.</string>
+    <string name="restore_fail">Geri yükleme başarısız!</string>
+
+    <!-- Bağlama -->
+    <string name="mount_system">Sistem</string>
+    <string name="mount_data">Veriler</string>
+    <string name="mount_cache">Önbellek</string>
+    <string name="mount_usb">USB Depolama Modu</string>
+
+    <!-- Ayarlar -->
+    <string name="settings_language">Dil</string>
+    <string name="settings_brightness">Parlaklık</string>
+    <string name="settings_timezone">Saat Dilimi</string>
+    <string name="settings_show_password">Şifreyi Göster</string>
+
+    <!-- Gelişmiş -->
+    <string name="advanced_adb">ADB Kabuğu</string>
+    <string name="advanced_terminal">Terminal</string>
+    <string name="advanced_fix_permissions">İzinleri Düzelt</string>
+    <string name="advanced_partition">Bölümleme</string>
+
+    <!-- Genel mesajlar -->
+    <string name="cancel">İptal</string>
+    <string name="ok">Tamam</string>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
+    <string name="back">Geri</string>
+    <string name="select_all">Tümünü Seç</string>
+    <string name="select_storage">Depolama Seç</string>
+    <string name="decrypt_prompt">Şifreyi Gir</string>
+    <string name="decrypt_fail">Şifre çözme başarısız.</string>
+
+    <!-- Hata mesajları -->
+    <string name="error_no_storage">Depolama bulunamadı!</string>
+    <string name="error_cant_mount">Bağlanamadı!</string>
+    <string name="error_low_space">Yetersiz alan!</string>
+
+    <!-- Cihaza özel -->
+    <string name="device_name">ASUS MeMO Pad 7 (ME176C)</string>
+    <string name="build_version">ME176C Türkçe TWRP</string>
+</resources>
