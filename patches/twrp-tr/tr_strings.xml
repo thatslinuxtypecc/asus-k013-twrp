@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     ME176C TWRP Türkçe Dil Dosyası
-    bootable/recovery/gui/devices/720x1280/res/values-tr/strings.xml
-    konumuna kopyalanmalı veya yama olarak uygulanmalıdır.
-
-    Slopsuz, sade Türkçe — gereksiz İngilizce bırakılmadı.
 -->
 <resources>
     <!-- Ana menü -->
@@ -19,8 +15,8 @@
 
     <!-- Yeniden başlatma menüsü -->
     <string name="reboot_system">Sistemi Başlat</string>
-    <string name="reboot_recovery">Recovery'ye Geç</string>
-    <string name="reboot_bootloader">Bootloader'a Geç</string>
+    <string name="reboot_recovery">Recovery'ye Uç</string>
+    <string name="reboot_bootloader">Bootloader'a Uç</string>
     <string name="reboot_poweroff">Kapat</string>
 
     <!-- Kurulum -->
@@ -88,6 +84,6 @@
     <string name="error_low_space">Yetersiz alan!</string>
 
     <!-- Cihaza özel -->
-    <string name="device_name">ASUS MeMO Pad 7 (ME176C)</string>
-    <string name="build_version">ME176C Türkçe TWRP</string>
+    <string name="device_name">ASUS MeMO Pad 7 </string>
+    <string name="build_version">ME176C Türkçe TWRP by thatslinuxtypecc</string>
 </resources>
