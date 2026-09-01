@@ -88,10 +88,24 @@ jobs:
           DEVICE_TREE_BRANCH: lineage-16.0
         run: |
           cd workspace
-          git clone --depth=1 \
-            --branch "$DEVICE_TREE_BRANCH" \
-            "$DEVICE_TREE_URL" \
-            device/asus/K013
+          # Check if branch exists, if not fall back to default branch
+          if git ls-remote --heads "$DEVICE_TREE_URL" "$DEVICE_TREE_BRANCH" | grep -q "$DEVICE_TREE_BRANCH"; then
+            BRANCH="$DEVICE_TREE_BRANCH"
+          else
+            echo "Branch $DEVICE_TREE_BRANCH not found, using default branch"
+            BRANCH=""
+          fi
+          
+          if [ -z "$BRANCH" ]; then
+            git clone --depth=1 \
+              "$DEVICE_TREE_URL" \
+              device/asus/K013
+          else
+            git clone --depth=1 \
+              --branch "$BRANCH" \
+              "$DEVICE_TREE_URL" \
+              device/asus/K013
+          fi
 
       # ── 8. Kernel kaynağını çek ───────────────────────────────────────────
       - name: me176c kernel kaynağını çek
