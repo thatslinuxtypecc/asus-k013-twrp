@@ -20,7 +20,7 @@ on:
 jobs:
   build:
     name: TWRP Derle - ME176C
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     # GitHub Actions ücretsiz runner: ~14GB disk, 7GB RAM
     # TWRP 3.3.x (Android 9 Pie tabanlı) için yeterli
 
